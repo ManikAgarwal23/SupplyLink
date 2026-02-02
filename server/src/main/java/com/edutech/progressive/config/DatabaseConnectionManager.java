@@ -5,37 +5,42 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.Properties;
 
-public class DatabaseConnectionManager {
-    private static Properties properties = new Properties();
+import javax.management.RuntimeErrorException;
 
-    static {
+public class DatabaseConnectionManager {
+    private static Properties properties=new Properties();
+
+    static{
         loadProperties();
     }
 
-private static void loadProperties() {
-    try {
-        InputStream input=DatabaseConnectionManager.class.getClassLoader().getResourceAsStream("application.properties");
-            if(input==null){
+    private static void loadProperties()
+    {
+        try(InputStream input=DatabaseConnectionManager.class.getClassLoader().getResourceAsStream("application.properties"))
+        {
+            if(input==null)
+            {
                 throw new RuntimeException("application.properties file not found");
             }
             properties.load(input);
-        
-    } catch (Exception e) {
-        // TODO: handle exception
-        throw new RuntimeException("Failed to load database properties",e);
+        }catch(Exception e)
+        {
+            throw new RuntimeException("Failed to load database properties",e);
+        }
     }
-}
 
-    public static Connection getConnection() {
-        try {
-            String url = properties.getProperty("spring.datasource.url");
-            String username = properties.getProperty("spring.datasource.username");
-            String password = properties.getProperty("spring.datasource.password");
-            String driver = properties.getProperty("spring.datasource.driver-class-name");
+    public static Connection getConnection()
+    {
+        try{
+            String url=properties.getProperty("spring.datasource.url");
+            String username=properties.getProperty("spring.datasource.username");
+            String password=properties.getProperty("spring.datasource.password");
+            String driver=properties.getProperty("spring.datasource.driver-class-name");
+
             return DriverManager.getConnection(url, username, password);
-        } catch (Exception e) {
-            // TODO: handle exception
-            throw new RuntimeException("Database connection failed", e);
+        }catch(Exception e)
+        {
+            throw new RuntimeException("Database connection failed",e);
         }
     }
 }
